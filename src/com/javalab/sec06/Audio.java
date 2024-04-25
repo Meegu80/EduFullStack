@@ -1,4 +1,4 @@
-package com.javalab.sec02;
+package com.javalab.sec06;
 
 public class Audio {
     private String model;
@@ -17,4 +17,12 @@ public class Audio {
     public void setModel(String model) {
         this.model = model;
     }
+
+    @Override
+    public String toString() {
+        return "Audio{" +
+                "model='" + model + '\'' +
+                '}';
+    }
 }
+

@@ -1,5 +1,5 @@
 package com.javalab.sec04;
 
-public class Cart {
+public class Car {
 
 }
