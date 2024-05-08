@@ -49,16 +49,16 @@ public class SchoolManagementMain {
                 professorMenu();
                 break;
             case 3:
-                //departmentMenu();
+                departmentMenu();
                 break;
             case 4:
-                //takesMenu();
+                takesMenu();
                 break;
             case 5:
-                //courseMenu();
+                courseMenu();
                 break;
             case 6:
-                //classMenu();
+                classMenu();
                 break;
             case 7:
                 //enrollmentMenu();
@@ -396,7 +396,7 @@ public class SchoolManagementMain {
             } else {
                 e.printStackTrace();
             }/*finally{
-                close(pstmt);*/  위에 try 안에 preparedstatement가 있어서 자동으로 닫혀서 이 구문이 필요없다.
+                close(pstmt);*/  //위에 try 안에 preparedstatement가 있어서 자동으로 닫혀서 이 구문이 필요없다.
             //}
         }
     }
@@ -533,7 +533,8 @@ public class SchoolManagementMain {
         System.out.print("채용 날짜(예: 2024-01-01): ");
         String hiredate = scanner.nextLine();
 
-        String sql = "";
+        String sql = "insert into professor(professor_id, jumin, name, department_id, grade, hiredate) " +
+                "values('?','?','?',?, '?', to_date('?', 'yyyy-mm-dd')); ";
 
         // try~with~resources 구문을 사용하면 close()를 명시적으로 호출하지 않아도 자동 close
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -647,9 +648,508 @@ public class SchoolManagementMain {
 
 
 
+    /**
+     * 성적 관련 메뉴
+     */
+    private static void takesMenu() {
+        while (true) {
+            System.out.println("=============================");
+            System.out.println("1. 성적 등록");
+            System.out.println("2. 성적 조회");
+            System.out.println("3. 성적 수정");
+            System.out.println("4. 성적 삭제");
+            System.out.println("5. 메인 메뉴로 가기");
+            System.out.println("=============================");
+            System.out.print("메뉴 선택: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // 버퍼 비우기
+
+            switch (choice) {
+                case 1:
+                    registerTakes();
+                    break;
+                case 2:
+                    displayTakes();
+                    break;
+                case 3:
+                    updateTakes();
+                    break;
+                case 4:
+                    deleteTakes();
+                    break;
+                case 5:
+                    return;
+                default:
+                    System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
+            }
+        }
+    }
+    /**
+     * 성적 등록
+     */
+    private static void registerTakes() {
+        System.out.println("[성적 등록]");
+        System.out.print("학생 ID: ");
+        String studentId = scanner.nextLine();
+        System.out.print("수업 코드: ");
+        String classId = scanner.nextLine();
+        System.out.print("성적: ");
+        String score = scanner.nextLine();
+
+        String sql = "insert into takes(student_id, class_id, score) " +
+                "values('?','?','?'); ";
+        try (PreparedStatement pstmt =conn.prepareStatement(sql)) {
+            pstmt.setString(1, studentId);
+            pstmt.setString(2, classId);
+            pstmt.setString(3, score);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("성적이 성공적으로 등록되었습니다.");
+            } else {
+                System.out.println("성적 등록에 실패했습니다.");
+            }
+        } catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 등록에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 성적 목록 조회
+     */
+    private static void displayTakes() {
+        String sql = "SELECT t.student_id, s.name student_name, r.course_id, r.name course_name, " +
+                "t.class_id, r.credit, c.year, c.semester, c.professor_id, p.name professor_name " +
+                "FROM takes t " +
+                "LEFT OUTER JOIN class c ON t.class_id=c.class_id " +
+                "LEFT OUTER JOIN course r ON c.course_id=r.course_id " +
+                "INNER JOIN student s ON t.student_id=s.student_id " +
+                "INNER JOIN professor p ON c.professor_id=p.professor_id ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("[등록된 성적 목록 조회]");
+            System.out.println("학생ID\t학생이름\t과목ID\t과목명\t수업ID\t학점\t년도\t학기\t교수ID\t교수이름");
+            System.out.println("-----------------------------------------------------------------------------------------------------------------");
+            while (rs.next()) {
+                String studentId = rs.getString("student_id");
+                String studentName = rs.getString("student_name");
+                String courseId = rs.getString("course_id");
+                String courseName = rs.getString("course_name");
+                String classId = rs.getString("class_id");
+                int credit = rs.getInt("credit");
+                int year = rs.getInt("year");
+                int semester = rs.getInt("semester");
+                String professorId = rs.getString("professor_id");
+                String professorName = rs.getString("professor_name");
+                System.out.printf(studentId + "\t" + studentName + "\t" + courseId + "\t" +
+                        courseName + "\t" + classId + "\t" + credit + "\t" + year + "\t" +
+                        semester + "\t" +  professorId + "\t" + professorName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }   // end of displayTakes
+
+    /**
+     * 성적 정보 수정
+     */
+    private static void updateTakes() {
+        System.out.println("[성적 정보 수정]");
+        System.out.print("학생 ID를 입력하세요: ");
+        String studentId = scanner.nextLine();
+        System.out.print("수업 ID: ");
+        String classId = scanner.nextLine();
+        System.out.print("새 성적: ");
+        String newScore = scanner.nextLine();
+
+        String sql = "UPDATE takes " +
+                "SET score=? " +
+                "WHERE student_id=? " +
+                "AND class_id=? ";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newScore);
+            pstmt.setString(2, studentId);
+            pstmt.setString(3, classId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("성적 정보가 성공적으로 업데이트 되었습니다.");
+            } else {
+                System.out.println("해당 학생 ID와 과목 코드의 성적을 찾을 수 없습니다.");
+            }
+        }  catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 수정에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+    /**
+     * 성적 정보 삭제
+     */
+    private static void deleteTakes() {
+        System.out.println("[성적 정보 삭제]");
+        System.out.print("삭제할 학생 ID를 입력하세요: ");
+        String studentId = scanner.nextLine();
+        System.out.print("삭제할 수업 ID를 입력하세요: ");
+        String classId = scanner.nextLine();
+
+        String sql = "DELETE FROM takes WHERE class_id = ? AND student_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, studentId);
+            pstmt.setString(2, classId);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("성적 정보가 성공적으로 삭제되었습니다.");
+            } else {
+                System.out.println("해당 학생 ID와 과목 코드의 성적을 찾을 수 없습니다.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 코스(강좌, 강의, 과목) 메뉴
+     */
+    private static void courseMenu() {
+        while (true) {
+            System.out.println("=============================");
+            System.out.println("1. 강의 등록");
+            System.out.println("2. 강의 조회");
+            System.out.println("3. 강의 정보 수정");
+            System.out.println("4. 강의 정보 삭제");
+            System.out.println("5. 메인 메뉴로 가기");
+            System.out.println("=============================");
+            System.out.print("메뉴 선택: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // 버퍼 비우기
+
+            switch (choice) {
+                case 1:
+                    registerCourse();
+                    break;
+                case 2:
+                    displayCourses();
+                    break;
+                case 3:
+                    updateCourse();
+                    break;
+                case 4:
+                    deleteCourse();
+                    break;
+                case 5:
+                    return;
+                default:
+                    System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
+            }
+        }
+    }
+
+    /**
+     * 강의 등록
+     */
+    private static void registerCourse() {
+        System.out.println("[강의 등록]");
+        System.out.print("등록할 강의코드: ");
+        String course_id = scanner.nextLine();
+        System.out.print("등록할 강의명: ");
+        String name = scanner.nextLine();
+        System.out.print("학점: ");
+        int credit = scanner.nextInt();
+        System.out.print("세부설명: ");
+        String description = scanner.nextLine();
+
+        String sql = "INSERT INTO course(course_id, name, credit, description) " +
+                "values('?','?',?,'?'); ";
+        try (PreparedStatement pstmt =conn.prepareStatement(sql)) {
+            pstmt.setString(1, course_id);
+            pstmt.setString(2, name);
+            pstmt.setInt(3, credit);
+            pstmt.setString(4, description);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의가 성공적으로 등록되었습니다.");
+            } else {
+                System.out.println("강의 등록에 실패했습니다.");
+            }
+        } catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 등록에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 강의 목록 조회
+     */
+    private static void displayCourses() {
+        String sql = "select * from course ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("[등록된 강의 목록 조회]");
+            System.out.println("강의코드\t강의명\t학점\t세부설명");
+            System.out.println("-----------------------------------------------------------------------------------------------------------------");
+            while (rs.next()) {
+                String course_id = rs.getString("course_id");
+                String name = rs.getString("name");
+                int credit = rs.getInt("credit");
+                String description = rs.getString("description");
+
+                System.out.printf(course_id + "\t" + name + "\t" + credit + "\t" + description);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }   // end of displayTakes
+
+    /**
+     * 성적 정보 수정
+     */
+    private static void updateCourse() {
+        System.out.println("[강의 정보 수정]");
+
+        System.out.print("강의코드를 입력하세요: ");
+        String course_id = scanner.nextLine();
+        System.out.print("강의명을 입력하세요: ");
+        String name = scanner.nextLine();
+        System.out.print("학점: ");
+        Int credit = scanner.nextInt();
+        System.out.print("세부설명: ");
+        String description = scanner.nextLine();
+
+        "INSERT INTO course(course_id, name, credit, description) " +
+                "values('?','?',?,'?'); ";
+
+        String sql = "UPDATE course SET name = '?', credit = ? , description = '?' WHERE course_id = '?' ";
+
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, course_id);
+            pstmt.setString(2, name);
+            pstmt.setInt(3, credit);
+            pstmt.setString(4, description);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의 정보가 성공적으로 업데이트 되었습니다.");
+            } else {
+                System.out.println("강의 정보 업데이트에 실패하였습니다.");
+            }
+        }  catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 수정에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 
+
+    /**
+     * 성적 정보 삭제
+     */
+    private static void deleteCourse() {
+        System.out.println("[강의 정보 삭제]");
+        System.out.print("삭제할 강의 코드를 입력하세요: ");
+        String course_id = scanner.nextLine();
+        String sql = "DELETE FROM course WHERE course_id = ? ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, course_id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의 정보가 성공적으로 삭제되었습니다.");
+            } else {
+                System.out.println("해당 강의 정보를 찾을 수 없습니다.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 수업 관련 메뉴
+     */
+    private static void classMenu() {
+        while (true) {
+            System.out.println("=============================");
+            System.out.println("1. 수업 등록");
+            System.out.println("2. 수업 조회");
+            System.out.println("3. 수업 정보 수정");
+            System.out.println("4. 수업 정보 삭제");
+            System.out.println("5. 메인 메뉴로 가기");
+            System.out.println("=============================");
+            System.out.print("메뉴 선택: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // 버퍼 비우기
+
+            switch (choice) {
+                case 1:
+                    registerClass();
+                    break;
+                case 2:
+                    displayClass();
+                    break;
+                case 3:
+                    updateClass();
+                    break;
+                case 4:
+                    deleteClass();
+                    break;
+                case 5:
+                    return;
+                default:
+                    System.out.println("잘못된 입력입니다. 다시 선택해주세요.");
+            }
+        }
+    }
+
+
+    /**
+     * 강의 등록
+     */
+    private static void registerClass() {
+        System.out.println("[수업 등록]");
+
+        System.out.print("등록할 수업코드: ");
+        String class_id = scanner.nextLine();
+        System.out.print("등록할 강의코드: ");
+        String course_id = scanner.nextLine();
+        System.out.print("해당연도: ");
+        int year = scanner.nextInt();
+        System.out.print("해당학기: ");
+        int semester = scanner.nextInt();
+        System.out.print("담당교수: ");
+        String professor_id = scanner.nextLine();
+        System.out.print("강의실: ");
+        String classroom = scanner.nextLine();
+
+        String sql = "INSERT INTO class(class_id, course_id, year, semester, professor_id, classroom) " +
+                "values('?','?',?, ?,'?','?'); ";
+        try (PreparedStatement pstmt =conn.prepareStatement(sql)) {
+            pstmt.setString(1, class_id);
+            pstmt.setString(2, course_id);
+            pstmt.setInt(3, year);
+            pstmt.setInt(4, semester);
+            pstmt.setString(5, professor_id);
+            pstmt.setString(6, classroom);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의가 성공적으로 등록되었습니다.");
+            } else {
+                System.out.println("강의 등록에 실패했습니다.");
+            }
+        } catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 등록에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 강의 목록 조회
+     */
+    private static void displayClass() {
+        String sql = "select * from course ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("[등록된 수업 목록 조회]");
+            System.out.println("수업코드\t강의코드\t해당연도\t학기\t교수명\t강의실");
+            System.out.println("-----------------------------------------------------------------------------------------------------------------");
+            while (rs.next()) {
+                String course_id = rs.getString("course_id");
+                String name = rs.getString("name");
+                int credit = rs.getInt("credit");
+                String description = rs.getString("description");
+
+                System.out.printf(course_id + "\t" + name + "\t" + credit + "\t" + description);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }   // end of displayTakes
+
+    /**
+     * 성적 정보 수정
+     */
+    private static void updateCourse() {
+        System.out.println("[강의 정보 수정]");
+
+        System.out.print("강의코드를 입력하세요: ");
+        String course_id = scanner.nextLine();
+        System.out.print("강의명을 입력하세요: ");
+        String name = scanner.nextLine();
+        System.out.print("학점: ");
+        Int credit = scanner.nextInt();
+        System.out.print("세부설명: ");
+        String description = scanner.nextLine();
+
+        "INSERT INTO course(course_id, name, credit, description) " +
+                "values('?','?',?,'?'); ";
+
+        String sql = "UPDATE course SET name = '?', credit = ? , description = '?' WHERE course_id = '?' ";
+
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, course_id);
+            pstmt.setString(2, name);
+            pstmt.setInt(3, credit);
+            pstmt.setString(4, description);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의 정보가 성공적으로 업데이트 되었습니다.");
+            } else {
+                System.out.println("강의 정보 업데이트에 실패하였습니다.");
+            }
+        }  catch (SQLException e) {
+            if (e instanceof SQLIntegrityConstraintViolationException) {
+                System.out.println("무결성 제약 조건 위반으로 수정에 실패했습니다.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+    /**
+     * 성적 정보 삭제
+     */
+    private static void deleteCourse() {
+        System.out.println("[강의 정보 삭제]");
+        System.out.print("삭제할 강의 코드를 입력하세요: ");
+        String course_id = scanner.nextLine();
+        String sql = "DELETE FROM course WHERE course_id = ? ";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, course_id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("강의 정보가 성공적으로 삭제되었습니다.");
+            } else {
+                System.out.println("해당 강의 정보를 찾을 수 없습니다.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 } // end of class
