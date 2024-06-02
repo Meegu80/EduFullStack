@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>직원 소개</title>
+<style>
+  .employee-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .employee {
+    width: 19%;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .employee img {
+    width: 100%;
+    border-radius: 50%;
+  }
+
+  .employee h3, .employee p {
+    margin: 5px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="employee-container">
+    <div class="employee">
+        <a href="employee1.html">
+            <img src="employee1.jpg" alt="Employee 1">
+            <h3>직원 1</h3>
+            <p>업무 1</p>
+        </a>
+    </div>
+    <!-- 다른 직원들도 동일한 구조로 추가 -->
+    <div class="employee">
+        <a href="employee2.html">
+            <img src="employee2.jpg" alt="Employee 2">
+            <h3>직원 2</h3>
+            <p>업무 2</p>
+        </a>
+    </div>
+    <!-- 추가 직원 -->
+    <!-- ... -->
+</div>
+
+</body>
+</html>

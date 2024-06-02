@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>제품 리뷰</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* 전체 페이지 스타일 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+/* 컨테이너 스타일 */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 중앙 정렬 */
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+/* 리뷰 폼 스타일 */
+#review-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  margin-bottom: 20px; /* 하단 여백 추가 */
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form-group button:hover {
+  background-color: #0056b3;
+}
+
+/* 리뷰 목록 스타일 */
+.product-reviews {
+  background-color: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 1200px;
+}
+
+.product-reviews h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.product-reviews ul {
+  list-style: none;
+  padding: 0;
+}
+
+.product-reviews li {
+  margin-bottom: 15px;
+}
+
+.product-reviews strong {
+  font-weight: bold;
+}
+
+.product-reviews span {
+  font-weight: bold;
+  color: #007bff;
+}
+.button-container {
+    display: flex;
+    align-items: center; /* 수직 정렬 */
+}
+
+#submit-btn,
+.upload-btn {
+    height: 24px; /* 버튼의 높이를 조정합니다. */
+    
+}
+
+
+
+  ul li {
+    flex: 0 0 calc(33.33% - 20px); /* 가로 정렬을 위해 아이템 너비 조정 */
+    margin-right: 10px;
+    margin-bottom: 10px;
+    
+    padding: 10px;
+  }
+
+ 
+  .product-reviews ul li img {
+    width: auto;
+    height: 240px; /* 이미지의 높이를 300px로 고정 */
+    margin: 0 auto; /* 가운데 정렬 */
+  }
+  .product-reviews ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.product-reviews ul li {
+  flex: 0 0 calc(32% - 20px); /* 가로 정렬을 위해 아이템 너비 조정 */
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  text-align: center; /* 가운데 정렬 */
+}
+</style>
+</head>
+<body>
+  <div class="container">
+   
+
+
+
+    <!-- 가상 제품 리뷰 항목 -->
+    <div class="product-reviews">
+      <h2>최근 리뷰</h2>
+      <ul>
+        <li>
+          <strong>홍길동</strong> - <span>3 점</span><br>
+          <img src="images/gallery1.jpg" alt="갤러리1"><br>
+          "괜찮아요 가성비 괜찮아요!"
+        </li>
+        <li>
+          <strong>뉴진스</strong> - <span>1 점</span><br>
+          <img src="images/gallery2.jpg" alt="갤러리2"><br>
+          "아이고 배야, 치료비 주나요?"
+        </li>
+        <li>
+          <strong>쌈뽕한AK47</strong> - <span>5 점</span><br>
+          <img src="images/gallery3.jpg" alt="갤러리3"><br>
+          "화끈하게 갈기는 맛, 다시 사겠습니다."
+        </li>
+        <!-- 더 많은 가상 항목 추가 -->
+      </ul>      </ul>
+      
+    </div>
+    <h1>제품 리뷰</h1>
+    <form id="review-form">
+      <div class="form-group">
+        <label for="name">이름:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">이메일:</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="rating">평점:</label>
+        <select id="rating" name="rating" required>
+          <option value="">평점을 선택하세요</option>
+          <option value="1">1 - 나쁨</option>
+          <option value="2">2 - 보통</option>
+          <option value="3">3 - 좋음</option>
+          <option value="4">4 - 매우 좋음</option>
+          <option value="5">5 - 최고</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="review">리뷰:</label>
+        <textarea id="review" name="review" rows="4" required></textarea>
+      </div>
+      <div class="button-container">
+        <input type="file" class="upload-btn"> 
+          <button type="submit" id="submit-btn">제출</button>
+        
+    </div>
+    </form>
+  </div>
+</body>
+</html>

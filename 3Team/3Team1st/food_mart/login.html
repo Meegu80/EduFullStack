@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Html Form</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f0f0f0;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                width: 300px;
+                padding: 20px;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+            }
+
+            label {
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            input {
+                margin-bottom: 10px;
+                padding: 5px;
+                font-size: 1em;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 1em;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+            input[type="submit"] {
+                padding: 10px;
+                font-size: 1em;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+
+            input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <form name="frm">
+            <label for="userid">ID</label>
+            <input
+                type="text"
+                id="userid"
+                name="userid"
+                placeholder="Enter your ID"
+                required="required">
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required="required">
+
+            <input type="submit" value="로그인">
+            <!-- '되돌아가기' 버튼 -->
+            <button type="button" id="goBackButton">되돌아가기</button>
+        </form>
+
+        <script>
+            const form = document.querySelector('form');
+            const goBackButton = document.getElementById('goBackButton');
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // 아이디와 비밀번호를 가져옴
+                let id = document
+                    .querySelector('#userid')
+                    .value;
+                let password = document
+                    .querySelector('#password')
+                    .value;
+
+                // 아이디와 비밀번호가 입력되었는지 확인
+                if (id.trim() === '' || password.trim() === '') {
+                    alert('ID와 Password를 입력해주세요.');
+                    return;
+                }
+
+                // 로그인 성공 메시지 출력 및 콘솔에 출력
+                console.log('로그인 성공! ID: ' + id + ', Password: ' + password);
+                // 로그인 성공 시 index.html로 이동
+                window.location.href = 'main.html';
+            
+            });
+
+            // '되돌아가기' 버튼 클릭 이벤트 처리
+            goBackButton.addEventListener('click', function () {
+                window.history.back(); // 이전 화면으로 이동
+            });
+        </script>
+    </body>
+</html>
