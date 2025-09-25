@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>테이블 연습</title>
+
+        <style>
+            TABLe {
+                border-collapse: collapse;
+            }
+            td,
+            th {
+                border: 1px solid gray;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+
+        <table>
+            <tr>
+                <th>번호</th>
+                <th>상품명</th>
+                <th>수량</th>
+                <th>가격</th>
+
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>커피</td>
+                <td>1개</td>
+                <td>2,500원</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>사이다</td>
+                <td>2개</td>
+                <td rowspan="2">1,500원</td>
+
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>탄산수</td> <!-- <td>>-->
+                <td>3개</td>
+            </tr>
+            <tr>
+                <td>총금액</td>
+                <td colspan="3">5,500원</td>
+            </tr>
+
+        </table>
+
+    </body>
+</html>
