@@ -1,2 +1,2 @@
-# EduFullStackfsdfsd
-ㄹㄴㅇㄹㄴㅇㄹㄴ
+# EduFullStack
+풀스택을 공부했다는 것은 결국 아무것도 할 줄 모른다는 것이다. -주인장 월~월~
